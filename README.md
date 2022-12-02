@@ -1,8 +1,6 @@
-# MuseuGengar-API-Java
-
 # Como criar uma API Java
 
-Foobar is a Python library for dealing with word pluralization.
+Nesse passo a passo vou explicar como criar uma API no java, fazendo um passo a passo e explicando.
 
 ## Passo 1 - Criação do projeto
 
@@ -14,7 +12,7 @@ Adicione as dependências que achar necessário, e também: Spring Web, Spring D
 
 src/main/java/nomeDaSuaAPI/ e então criar as pastas controller, model, repository.
 
-Criar os arquivos na raiz (nomeDaSuaAPI): DataConfiguration, RestApiApplication
+Criar os arquivos na raiz (nomeDaSuaAPI): DataConfiguration, RestApiApplication.
 
 Criar respectivamente o controller, model, e o repository. O Repository é uma interface, as demais são classes java.
 
@@ -143,8 +141,12 @@ public class RestApiApplication {
 ```
 
 
-## Passo 8 - Controller
-Adicionar os metodos Get/Getall
+## Passo 8 - Controller [em andamento]
+Adicionar os endpoints GetAll e Get por ID na sua classe Controller.
+
+     @RequestMapping
+
+
 ```java
     @RequestMapping(value = "/produto", method = RequestMethod.GET)
     public List<Produto> getProduto(){
