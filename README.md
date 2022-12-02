@@ -19,18 +19,20 @@ Criar os arquivos na raiz (nomeDaSuaAPI): DataConfiguration, RestApiApplication
 Criar respectivamente o controller, model, e o repository. O Repository é uma interface, as demais são classes java.
 
 ## Passo 3 - Preencher Model
+    @Entity
+Na classe do Model, essa notação fará com que o JPA estabelecerá a ligação entre a entidade e uma tabela de mesmo nome no banco de dados, onde os dados de objetos desse tipo poderão ser persistidos.
 
-@Entity na classe do Model
-
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+O Hibernate utilizará como estratégia a geração AUTO_INCREMENT.
+Já, se o banco de dados for o Postgres, o Hibernate gerará uma coluna do tipo SERIAL.
 
 ```java
+import javax.persistence.*;
+
 @Entity
 public class Produto {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
- //O Hibernate utilizará como estratégia a geração AUTO_INCREMENT. 
- //Já, se o banco de dados for o Postgres, o Hibernate gerará uma coluna do tipo SERIAL.
     private Long id;
 
     @Column(nullable = false)
@@ -38,14 +40,15 @@ public class Produto {
 
     @Column(nullable = true)
     private Integer quantidade;
-
+}
 ```
-Gera os Getters,Setters,HashCode,ToString,e Equals.
-
+Gere os Getters e Setters,HashCode,ToString,e Equals.
 ## Passo 4 - Controller
 
-Notação na classe: @RestController
+    @RestController
 
+Essa anotação combina o comportamento do @Controller e do @ResponseBody.
+A anotação é responsável por retornar o objeto, e os dados do objeto são gravados diretamente na resposta HTTP como JSON ou XML.
 ```java
 import org.springframework.web.bind.annotation.RestController;
 
@@ -58,15 +61,12 @@ public class ProdutoController {
     public ProdutoController(ProdutoRepository produtoRepository) {
         this.produtoRepository = produtoRepository;
     }
-
-
 }
-
 ```
 
 ## Passo 5 - Repository
-
-No seu repository:
+    public interface NomeDoSeuModelRepositoy extends JpaRepository<Model, Long>
+Definir esse extends serve para obtemos vários métodos CRUD genéricos em nosso tipo que permitem salvar o Model, excluí-los e assim por diante. Em segundo lugar, isso permitirá que a infraestrutura do repositório Spring Data JPA verifique o caminho de classe dessa interface e crie um bean Spring para ela.
 ```java
 import org.springframework.data.jpa.repository.JpaRepository;
 import produtoApi.model.Produto;
@@ -75,13 +75,18 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
 }
 ```
 
-Com isso, você criou a estrutura inicial.
-
 ## Passo 6 - DataConfiguration
 
+    @Configuration
 
-Vai precisar colocar a anotação na classe: @Configuration
+A anotação @Configuration  indica que a classe possui métodos de definição @Bean, e nos permite usar anotações para injeção de dependência.
 
+    @Bean
+É uma anotação em nível de método,  retorna um objeto que spring deve registrar como um bean no contexto da aplicação.
+
+Um bean é um objeto que é instanciado, montado e gerenciado por um contêiner Spring.
+
+Quando um contêiner Spring IoC constrói objetos, todos os objetos são chamados de Spring beans, pois são gerenciados pelo contêiner IoC.
 ```java
 import org.springframework.context.annotation.Configuration;
 
@@ -113,6 +118,17 @@ public class DataConfiguration {
 
 ## Passo 7 - RestApiApplication
 Será a classe a qual você vai executar.
+
+Uma única @SpringBootApplicationanotação pode ser usada para habilitar esses três recursos, ou seja:
+
+@EnableAutoConfiguration: Ativa o mecanismo de configuração automática do Spring Boot.
+
+@ComponentScan: Habilite @Component varredura no pacote onde o aplicativo está localizado.
+
+@Configuration: Permite registrar beans extras no contexto ou importar classes de configuração adicionais.
+
+A @SpringBootApplicationanotação equivale a usar @EnableAutoConfiguration, @ComponentScancom e @Configuration.
+
 ```java
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -143,6 +159,8 @@ Adicionar os metodos Get/Getall
 ```
 
 ## Passo 9
+
+
 
 
 
