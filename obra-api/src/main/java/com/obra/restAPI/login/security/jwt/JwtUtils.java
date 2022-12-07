@@ -35,6 +35,11 @@ public class JwtUtils {
     }
   }
 
+  // Esse Path definido abaixo, será o path que será necessário no início de cada controller como um
+  // @RequestMapping("/api")
+  // Sendo assim, se autenticado, e conforme as regras do controller
+  // Conseguirá fazer as requisições.
+
   public ResponseCookie generateJwtCookie(UserDetailsImpl userPrincipal) {
     String jwt = generateTokenFromUsername(userPrincipal.getUsername());
     ResponseCookie cookie = ResponseCookie.from(jwtCookie, jwt).path("/api").maxAge(24 * 60 * 60).httpOnly(true).build();

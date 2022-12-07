@@ -11,8 +11,9 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
+
 @RestController
+@RequestMapping("/api")
 public class ObraController {
     private final ObraRepository obraRepository;
 
@@ -23,22 +24,26 @@ public class ObraController {
 
 
     @RequestMapping(value = "/obras", method = RequestMethod.GET)
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public List<Obra> getObras(){
         return obraRepository.findAll();
     }
 
     @RequestMapping(value = "/obras/{id}", method = RequestMethod.GET)
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public ResponseEntity<Obra> getObrasById(@PathVariable(value = "id")long id){
         Optional<Obra> contato = obraRepository.findById(id);
         return contato.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @RequestMapping(value = "/obras", method =  RequestMethod.POST)
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public Obra saveObras(@Valid @RequestBody Obra obra){
         return  obraRepository.save(obra);
     }
 
     @RequestMapping(value = "/obras/{id}", method =  RequestMethod.PUT)
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public ResponseEntity<Obra> updateObras(@PathVariable(value = "id") long id, @Valid @RequestBody Obra newObra){
         Optional<Obra> oldContato = obraRepository.findById(id);
         if(oldContato.isPresent()){
@@ -56,6 +61,7 @@ public class ObraController {
     }
 
     @RequestMapping(value = "/obras/{id}", method = RequestMethod.DELETE)
+    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public ResponseEntity<Object> Delete(@PathVariable(value = "id") long id){
         Optional<Obra> contato = obraRepository.findById(id);
         if(contato.isPresent()){
