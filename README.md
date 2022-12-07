@@ -95,7 +95,7 @@ public class DataConfiguration {
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://localhost:3306/obra-api?useTimezone=true&serverTimezone=America/Sao_Paulo");
+        dataSource.setUrl("jdbc:mysql://localhost:3306/obra-api?useTimezone=true&serverTimezone=America/Sao_Paulo"); //o obra-api é o nome do banco de dados que precisa ser criado
         dataSource.setUsername("xxxx"); //user banco
         dataSource.setPassword("xxxx"); //senha banco
         return dataSource;
