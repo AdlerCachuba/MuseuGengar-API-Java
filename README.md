@@ -85,6 +85,9 @@ A anotação @Configuration  indica que a classe possui métodos de definição 
 Um bean é um objeto que é instanciado, montado e gerenciado por um contêiner Spring.
 
 Quando um contêiner Spring IoC constrói objetos, todos os objetos são chamados de Spring beans, pois são gerenciados pelo contêiner IoC.
+
+Com base nisso, será necessário criar manualmente um banco de dados chamado de obra-api.
+Após a criação do banco, as tabelas do banco serão mapeadas conforme as anotações nos models e criadas na execução do projeto.
 ```java
 import org.springframework.context.annotation.Configuration;
 
@@ -141,12 +144,13 @@ public class RestApiApplication {
 ```
 
 
-## Passo 8 - Controller [em andamento]
+## Passo 8 - Controller 
 Adicionar os endpoints GetAll e Get por ID na sua classe Controller.
 
      @RequestMapping
 
-
+Responsável por direcionar o caminho do endpoint. Sempre respeitando as regras da classe como url pai, e depois os métodos sendo as url's que vão na frente.
+Nós também podemos definir qual método será utilizado (GET/POST/PUT/DELETE).
 ```java
     @RequestMapping(value = "/produto", method = RequestMethod.GET)
     public List<Produto> getProduto(){
@@ -160,11 +164,62 @@ Adicionar os endpoints GetAll e Get por ID na sua classe Controller.
     }
 ```
 
-## Passo 9
+# JWT Token
+
+Após rodar o projeto, é necessário rodar o sql abaixo para criar os cargos para os usuários:
+
+    INSERT INTO roles(name) VALUES('ROLE_USER');
+    INSERT INTO roles(name) VALUES('ROLE_MODERATOR');
+    INSERT INTO roles(name) VALUES('ROLE_ADMIN');
+
+O Package 'login' contempla as funcionalidades:
+
+Cadastro (POST): Todo cadastro de usuário é realizado através do endpoint:
+
+    http://localhost:8080/api/auth/signup
+
+Json Exemplo:
+
+    {
+       "username": "adler",
+       "email": "adlermateuself@gmail.com",
+       "password": "adler123"
+    }
 
 
+Login (POST): 
+
+    http://localhost:8080/api/auth/signin
 
 
+Json Exemplo:
 
+    {
+        "username": "adler",
+        "password":"adler123"
+    }
+
+Deslogar (POST):
+
+    http://localhost:8080/api/auth/signout
+
+Não é necessário nenhum Json para deslogar.
+
+Após o usuário logar, ele estará autenticado conforme seu cargo (Role), para então fazer as requisições.
+
+Nos Controllers nós podemos limitar um endpoint conforme o seu cargo:
+
+```java
+    @RestController
+    @RequestMapping("/api")
+    public class ProdutoController {
+
+        @RequestMapping(value = "/produtos", method = RequestMethod.GET)
+        @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+        public List<Produto> getProdutos() {
+            return produtoRepository.findAll();
+        }
+    }
+```
 
 
