@@ -223,3 +223,13 @@ Nos Controllers nós podemos limitar um endpoint conforme o seu cargo:
 ```
 
 
+Esse caminho /api está mapeado na classe JwtUtils, na qual define qual o caminho pai que irá funcionar a autenticação, no caso, todos os endpoints que iniciarem com o /api irão estar dentro do escopo. É possível também verificar o tempo que o token é válido, definido pelo maxAge, neste exemplo abaixo tem a duração de um dia.
+
+```java
+    public ResponseCookie generateJwtCookie(UserDetailsImpl userPrincipal) {
+        String jwt = generateTokenFromUsername(userPrincipal.getUsername());
+        ResponseCookie cookie = ResponseCookie.from(jwtCookie, jwt).path("/api").maxAge(24 * 60 * 60).httpOnly(true).build();
+        return cookie;
+    }
+```
+

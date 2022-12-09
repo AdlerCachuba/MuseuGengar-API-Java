@@ -4,6 +4,7 @@ package com.obra.restAPI.login.controllers;
 import com.obra.restAPI.login.models.ERole;
 import com.obra.restAPI.login.models.Role;
 import com.obra.restAPI.login.models.User;
+import com.obra.restAPI.login.payload.request.ChangeRoleRequest;
 import com.obra.restAPI.login.payload.request.LoginRequest;
 import com.obra.restAPI.login.payload.request.SignupRequest;
 import com.obra.restAPI.login.payload.response.MessageResponse;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -128,4 +131,40 @@ public class AuthController {
     return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
         .body(new MessageResponse("You've been signed out!"));
   }
+
+  @PostMapping("/changeRoleToAdm")
+  @PreAuthorize("hasRole('ADMIN')")
+  public ResponseEntity<?> changeRoleToAdm(@Valid @RequestBody ChangeRoleRequest changeRoleRequest){
+    if (!userRepository.existsByUsername(changeRoleRequest.getLoginRequest().getUsername())) {
+      return ResponseEntity.badRequest().body(new MessageResponse("Error: Usuario "+ changeRoleRequest.getLoginRequest().getUsername() +"não cadastro!"));
+    }
+
+    Set<Role> roles = changeRole(changeRoleRequest);
+    Optional<User> user = userRepository.findByUsername(changeRoleRequest.getLoginRequest().getUsername());
+    user.get().setRoles(roles);
+    userRepository.save(user.get());
+
+    return ResponseEntity.ok(new MessageResponse("Usuário trocado para " + changeRoleRequest.getRole() + " com sucesso!"));
+  }
+
+  private Set<Role> changeRole(ChangeRoleRequest changeRoleRequest) {
+    Set<Role> roles = new HashSet<>();
+    switch (changeRoleRequest.getRole()){
+      case("ADMIN"):
+        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+        roles.add(adminRole);
+      case("MOD"):
+        Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
+                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+        roles.add(modRole);
+      case("USER"):
+        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+        roles.add(userRole);
+    }
+    return roles;
+  }
+
+
 }
