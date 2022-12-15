@@ -132,12 +132,17 @@ public class AuthController {
         .body(new MessageResponse("You've been signed out!"));
   }
 
-  @PostMapping("/changeRoleToAdm")
+  @PostMapping("/changeRoleTo")
   @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<?> changeRoleToAdm(@Valid @RequestBody ChangeRoleRequest changeRoleRequest){
+  public ResponseEntity<?> changeRoleTo(@Valid @RequestBody ChangeRoleRequest changeRoleRequest){
     if (!userRepository.existsByUsername(changeRoleRequest.getLoginRequest().getUsername())) {
       return ResponseEntity.badRequest().body(new MessageResponse("Error: Usuario "+ changeRoleRequest.getLoginRequest().getUsername() +"não cadastro!"));
     }
+
+    Authentication authentication = authenticationManager
+            .authenticate(new UsernamePasswordAuthenticationToken(changeRoleRequest.getLoginRequest().getUsername(), changeRoleRequest.getLoginRequest().getPassword()));
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+
 
     Set<Role> roles = changeRole(changeRoleRequest);
     Optional<User> user = userRepository.findByUsername(changeRoleRequest.getLoginRequest().getUsername());
