@@ -82,18 +82,12 @@ public class WebSecurityConfig {
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
         .authorizeRequests().antMatchers("/api/auth/**").permitAll()
             .antMatchers("/v3/api-docs/**").permitAll()
-
-        .antMatchers("/api/test/**").permitAll()
-
+            .antMatchers("/swagger-ui/**").permitAll()
+            //Para acessar o Swagger: http://localhost:8080/swagger-ui/index.html
             .antMatchers("/api/test/**").permitAll()
-
             .anyRequest().authenticated();
-
-
     http.authenticationProvider(authenticationProvider());
-
     http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-    
     return http.build();
   }
 }
