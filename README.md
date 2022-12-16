@@ -233,3 +233,36 @@ Esse caminho /api está mapeado na classe JwtUtils, na qual define qual o caminh
     }
 ```
 
+
+# Swagger
+
+Para implementar o Swagger 3.0 no seu projeto, primeiro você precisa colocar a dependência no pom.xml:
+
+		<!--Swagger-->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-ui</artifactId>
+			<version>1.6.4</version>
+		</dependency>
+
+E depois para conseguir entrar na página sem a autenticação do JWT Token você precisa ir na sua classe WebSecurityConfig
+
+```java 
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.cors().and().csrf().disable()
+        .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
+        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+        .authorizeRequests().antMatchers("/api/auth/**").permitAll()
+        // Essa parte abaixo:
+        .antMatchers("/v3/api-docs/**").permitAll()
+        .antMatchers("/swagger-ui/**").permitAll()
+        //Para acessar o Swagger: http://localhost:8080/swagger-ui/index.html
+        .antMatchers("/api/test/**").permitAll()
+        .anyRequest().authenticated();
+        http.authenticationProvider(authenticationProvider());
+        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+        return http.build();
+    }
+```
+
