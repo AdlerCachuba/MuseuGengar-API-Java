@@ -143,6 +143,7 @@ public class RestApiApplication {
 }
 ```
 
+O que significa REST? Representational State Transfer.
 
 ## Passo 8 - Controller 
 Adicionar os endpoints GetAll e Get por ID na sua classe Controller.
